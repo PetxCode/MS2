@@ -21,6 +21,7 @@ export const viewAuth = async (req: Request, res: Response) => {
     const view = await authEntity.find();
     res.status(200).json({
       message: "view-auth data",
+      length: view.length,
       data: view,
     });
   } catch (error) {
@@ -33,6 +34,7 @@ export const viewTestAuth = async (req: Request, res: Response) => {
     const view = await authTestEntity.find();
     res.status(200).json({
       message: "view-auth data",
+      length: view.length,
       data: view,
     });
   } catch (error) {

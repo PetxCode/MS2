@@ -17,7 +17,7 @@ database
 
     console.log("database connected");
 
-    exchanger("AuthUser24");
+    exchanger("AuthUser44");
 
     process.on("uncaughtException", (err: Error) => {
       console.log("Shutting down server: uncaughtException");

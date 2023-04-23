@@ -1,5 +1,7 @@
 import amqp from "amqplib/callback_api";
 import { authTestEntity } from "../model/authTestModel";
+import { authEntity } from "../model/authModel";
+import jwt_decode from "jwt-decode";
 
 const url = "amqp://guest:guest@localhost:5672";
 
@@ -15,10 +17,26 @@ export const exchanger = (path: string) => {
           channel.assertQueue(path, { durable: false });
 
           channel.consume(path, async (message: amqp.Message | null) => {
-            console.log(message.content.toString());
-            await authTestEntity
-              .create({ token: message.content.toString() })
-              .save();
+            console.log("viewing user content: ", message.content.toString());
+            let content: any = message.content.toString();
+            let decoded: any = jwt_decode(content);
+            console.log("viewing user content: ", decoded);
+
+            const check = await authEntity.findOne({
+              where: { userID: decoded?.id },
+            });
+
+            if (check) {
+              console.log("reaedy");
+              return await authEntity
+                .merge(check, {
+                  token: content?.token,
+                  userID: decoded?.id,
+                })
+                .save();
+            } else {
+              await authEntity.create({ token: content }).save();
+            }
           });
         }
       });
